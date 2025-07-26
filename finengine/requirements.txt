@@ -4,6 +4,7 @@ numpy
 numpy-financial
 matplotlib
 fpdf
+dotenv
 
 # FastAPI and Server
 fastapi

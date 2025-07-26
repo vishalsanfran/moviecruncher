@@ -1,6 +1,6 @@
 # FastAPI-based API for Film Finance Data (JSON Charts)
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Dict, List, Union
 from film_finance_model import FilmFinanceModel  # assume your main logic is moved into this module
@@ -9,6 +9,22 @@ import logging
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.requests import Request
+import os
+from typing import Optional
+from dotenv import load_dotenv
+load_dotenv()
+
+
+API_KEY = os.getenv("API_KEY")
+
+if not API_KEY:
+    raise RuntimeError("Missing required environment variable: API_KEY")
+
+def verify_api_key(x_api_key: Optional[str] = Header(None)):
+    if x_api_key is None:
+        raise HTTPException(status_code=401, detail="Missing API Key")
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=403, detail="Invalid API Key")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -16,7 +32,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # or ["*"] for all origins
+    allow_origins=["*"],  # or ["*"] for all origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,7 +58,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 @app.post("/models")
-def generate_chart_data(req: ReportRequest):
+def generate_chart_data(req: ReportRequest, auth=Depends(verify_api_key)):
     try:
         model = FilmFinanceModel(req.title, {
             "budget": req.budget,
