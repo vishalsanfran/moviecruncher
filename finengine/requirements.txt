@@ -1,0 +1,10 @@
+# Core Libraries
+pandas
+numpy
+numpy-financial
+matplotlib
+fpdf
+
+# FastAPI and Server
+fastapi
+uvicorn[standard]
