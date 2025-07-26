@@ -1,22 +1,59 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line, CartesianGrid } from 'recharts';
+import {
+    BarChart, Bar, XAxis, YAxis, Tooltip, Legend,
+    LineChart, Line, CartesianGrid
+} from 'recharts';
+
+interface ScenarioResult {
+    scenario: string;
+    label: string;
+    roi: number;
+    irr: number | null;
+}
+
+interface ChartData {
+    scenarios: string[];
+    scenario_labels: Record<string, string>;
+    roi_percent: number[];
+    irr_percent: (number | null)[];
+    roi_series: ScenarioResult[];
+    irr_series: ScenarioResult[];
+    breakeven_receipts: number;
+    cash_flows: {
+        years: string[];
+        annual: number[];
+        cumulative: number[];
+    };
+}
+
+interface Inputs {
+    equityInvestment: number;
+    debtFinancing: number;
+    gapFinancing: number;
+    equityPremiumPercent: number;
+    netProfitSplitPercent: number;
+    camFeePercent: number;
+    distributionFeeDomesticPercent: number;
+    distributionFeeForeignPercent: number;
+}
 
 export default function App() {
-    const [inputs, setInputs] = useState({
+    const [inputs, setInputs] = useState<Inputs>({
         equityInvestment: 3974745,
         debtFinancing: 738200,
         gapFinancing: 1481276,
         equityPremiumPercent: 20,
         netProfitSplitPercent: 50,
+        camFeePercent: 0.75,
         distributionFeeDomesticPercent: 25,
-        distributionFeeForeignPercent: 25,
-        camFeePercent: 0.75
+        distributionFeeForeignPercent: 25
     });
-    const [result, setResult] = useState(null);
+
+    const [result, setResult] = useState<ChartData | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setInputs((prev) => ({ ...prev, [name]: Number(value) }));
     };
@@ -24,7 +61,7 @@ export default function App() {
     const runModel = async () => {
         setLoading(true);
         try {
-            const response = await axios.post("http://localhost:8000/models", {
+            const payload = {
                 title: "Demo Project",
                 budget: { total_gross_budget: 8892544 },
                 financing: {
@@ -59,61 +96,56 @@ export default function App() {
                     revenue_recognition_schedule: [0.6, 0.3, 0.1],
                     tax_credit_inflow_year: 1
                 }
-            });
+            };
+
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_BASE_URL}/models`,
+                payload,
+                {
+                    headers: {
+                        "x-api-key": import.meta.env.VITE_API_KEY
+                    }
+                }
+            );
+
             setResult(response.data);
         } catch (err) {
-            console.error('Failed to fetch model output:', err);
+            console.error("Failed to fetch model output:", err);
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="p-6 max-w-4xl mx-auto">
-            <h1 className="text-2xl font-bold mb-4">Film Finance Simulator</h1>
+        <div className="p-6 max-w-5xl mx-auto">
+            <h1 className="text-2xl font-bold mb-4">🎬 Film Finance Simulator</h1>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
-                <label>
-                    Equity Investment ($):
-                    <input type="number" name="equityInvestment" value={inputs.equityInvestment} onChange={handleChange} className="ml-2 border p-1" />
-                </label>
-                <label>
-                    Debt Financing ($):
-                    <input type="number" name="debtFinancing" value={inputs.debtFinancing} onChange={handleChange} className="ml-2 border p-1" />
-                </label>
-                <label>
-                    Gap Financing ($):
-                    <input type="number" name="gapFinancing" value={inputs.gapFinancing} onChange={handleChange} className="ml-2 border p-1" />
-                </label>
-                <label>
-                    Equity Premium (%):
-                    <input type="number" name="equityPremiumPercent" value={inputs.equityPremiumPercent} onChange={handleChange} className="ml-2 border p-1" />
-                </label>
-                <label>
-                    Net Profit Split to Investors (%):
-                    <input type="number" name="netProfitSplitPercent" value={inputs.netProfitSplitPercent} onChange={handleChange} className="ml-2 border p-1" />
-                </label>
-                <label>
-                    Distribution Fee (Domestic %) :
-                    <input type="number" name="distributionFeeDomesticPercent" value={inputs.distributionFeeDomesticPercent} onChange={handleChange} className="ml-2 border p-1" />
-                </label>
-                <label>
-                    Distribution Fee (Foreign %) :
-                    <input type="number" name="distributionFeeForeignPercent" value={inputs.distributionFeeForeignPercent} onChange={handleChange} className="ml-2 border p-1" />
-                </label>
-                <label>
-                    CAM Fee (% of receipts):
-                    <input type="number" step="0.01" name="camFeePercent" value={inputs.camFeePercent} onChange={handleChange} className="ml-2 border p-1" />
-                </label>
+                {Object.entries(inputs).map(([key, value]) => (
+                    <label key={key} className="flex flex-col">
+                        {key.replace(/([A-Z])/g, " $1")}:
+                        <input
+                            type="number"
+                            name={key}
+                            value={value}
+                            onChange={handleChange}
+                            className="border p-2 rounded mt-1"
+                        />
+                    </label>
+                ))}
             </div>
 
-            <button onClick={runModel} disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded">
-                {loading ? 'Running...' : 'Run Model'}
+            <button
+                onClick={runModel}
+                disabled={loading}
+                className="px-4 py-2 bg-blue-600 text-white rounded"
+            >
+                {loading ? "Running..." : "Run Model"}
             </button>
 
             {result && (
-                <div className="mt-8">
-                    <h2 className="text-xl font-semibold mb-2">ROI by Scenario</h2>
+                <div className="mt-10">
+                    <h2 className="text-xl font-semibold mb-4">📊 ROI & IRR by Scenario</h2>
                     <BarChart width={600} height={300} data={result.scenarios.map((label, i) => ({
                         name: label,
                         ROI: result.roi_percent[i],
@@ -127,15 +159,15 @@ export default function App() {
                         <Bar dataKey="IRR" fill="#82ca9d" />
                     </BarChart>
 
-                    <h2 className="text-xl font-semibold mt-8 mb-2">Cash Flow (Base Case)</h2>
+                    <h2 className="text-xl font-semibold mt-10 mb-4">💰 Cash Flow (Base Case)</h2>
                     <LineChart width={600} height={300} data={result.cash_flows.years.map((y, i) => ({
                         year: y,
                         annual: result.cash_flows.annual[i],
                         cumulative: result.cash_flows.cumulative[i]
                     }))}>
+                        <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="year" />
                         <YAxis />
-                        <CartesianGrid strokeDasharray="3 3" />
                         <Tooltip />
                         <Legend />
                         <Line type="monotone" dataKey="annual" stroke="#8884d8" />
