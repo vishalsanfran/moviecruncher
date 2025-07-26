@@ -1,14 +1,27 @@
 import { useState } from "react";
 import axios from "axios";
+import type { Inputs } from '../types';
 
 interface UseFinanceModelResult {
+    inputs: Inputs;
+    setInputs: React.Dispatch<React.SetStateAction<Inputs>>;
     result: any;
     loading: boolean;
     error: string | null;
-    runModel: (inputs: Record<string, number>) => Promise<void>;
+    runModel: () => Promise<void>;
 }
 
 export const useFinanceModel = (): UseFinanceModelResult => {
+    const [inputs, setInputs] = useState<Inputs>({
+        equityInvestment: 3974745,
+        debtFinancing: 738200,
+        gapFinancing: 1481276,
+        equityPremiumPercent: 20,
+        netProfitSplitPercent: 50,
+        camFeePercent: 0.75,
+        distributionFeeDomesticPercent: 25,
+        distributionFeeForeignPercent: 25
+    });
     const [result, setResult] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -74,5 +87,5 @@ export const useFinanceModel = (): UseFinanceModelResult => {
         }
     };
 
-    return { result, loading, error, runModel };
+    return { inputs, setInputs, result, loading, error, runModel };
 };

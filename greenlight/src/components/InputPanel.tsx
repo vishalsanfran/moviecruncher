@@ -5,19 +5,25 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 interface Props {
     inputs: Record<string, number>;
     inputGroups: Record<string, string[]>;
-    inputMeta: Record<
-        string,
-        { label?: string; placeholder?: string }
-    >;
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     runModel: () => void;
     loading: boolean;
 }
 
+const inputMeta: Record<string, { label: string; placeholder?: string }> = {
+    equityInvestment: { label: "Equity Investment ($)" },
+    debtFinancing: { label: "Debt Financing ($)" },
+    gapFinancing: { label: "Gap Financing ($)" },
+    equityPremiumPercent: { label: "Equity Premium (%)" },
+    netProfitSplitPercent: { label: "Net Profit Investor Split (%)" },
+    camFeePercent: { label: "CAM Fee (%)" },
+    distributionFeeDomesticPercent: { label: "Domestic Distrib Fee (%)" },
+    distributionFeeForeignPercent: { label: "Foreign Distrib Fee (%)" }
+};
+
 export default function InputPanel({
                                        inputs,
                                        inputGroups,
-                                       inputMeta,
                                        handleChange,
                                        runModel,
                                        loading,
