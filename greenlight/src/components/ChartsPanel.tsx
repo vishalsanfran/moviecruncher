@@ -12,6 +12,14 @@ interface ScenarioKPI {
     irr: number | null;
 }
 
+interface AnnualWaterfalls {
+    [scenario: string]: {
+        [lineItem: string]: {
+            [year: string]: number;
+        };
+    };
+}
+
 interface ChartData {
     scenarios: string[];
     scenario_labels: Record<string, string>;
@@ -27,7 +35,7 @@ interface ChartData {
         cumulative: number[];
     };
     scenario_summary: Record<string, ScenarioKPI>;
-    annual_waterfalls: Record<string, Record<string, Record<string, number>>>;
+    annual_waterfalls: AnnualWaterfalls;
 }
 
 export default function ChartsPanel({ data }: { data: ChartData }) {
