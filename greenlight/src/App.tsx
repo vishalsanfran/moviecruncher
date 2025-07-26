@@ -8,15 +8,7 @@ export default function App() {
         const { name, value } = e.target;
         setInputs((prev) => ({ ...prev, [name]: Number(value) }));
     };
-
     const { inputs, setInputs, result, loading, _, runModel } = useFinanceModel();
-
-    const inputGroups: Record<string, string[]> = {
-        "Financing": ["equityInvestment", "debtFinancing", "gapFinancing"],
-        "Investor Terms": ["equityPremiumPercent", "netProfitSplitPercent"],
-        "Fees": ["camFeePercent", "distributionFeeDomesticPercent", "distributionFeeForeignPercent"]
-    };
-
     const handleRunModel = () => {
         console.log("Inputs going to runModel:", inputs);
         runModel(inputs);
@@ -26,7 +18,6 @@ export default function App() {
         <div className="flex h-screen overflow-hidden">
             <InputPanel
                 inputs={inputs}
-                inputGroups={inputGroups}
                 handleChange={handleChange}
                 runModel={handleRunModel}
                 loading={loading}

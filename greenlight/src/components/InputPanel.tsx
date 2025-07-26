@@ -21,9 +21,14 @@ const inputMeta: Record<string, { label: string; placeholder?: string }> = {
     distributionFeeForeignPercent: { label: "Foreign Distrib Fee (%)" }
 };
 
+const inputGroups: Record<string, string[]> = {
+    "Financing": ["equityInvestment", "debtFinancing", "gapFinancing"],
+    "Investor Terms": ["equityPremiumPercent", "netProfitSplitPercent"],
+    "Fees": ["camFeePercent", "distributionFeeDomesticPercent", "distributionFeeForeignPercent"]
+};
+
 export default function InputPanel({
                                        inputs,
-                                       inputGroups,
                                        handleChange,
                                        runModel,
                                        loading,
