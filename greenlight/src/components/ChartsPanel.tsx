@@ -5,6 +5,13 @@ interface ScenarioComposition {
     profit: number;
 }
 
+interface ScenarioKPI {
+    gross_receipts: number;
+    total_return: number;
+    roi: number;
+    irr: number | null;
+}
+
 interface ChartData {
     scenarios: string[];
     scenario_labels: Record<string, string>;
@@ -19,11 +26,53 @@ interface ChartData {
         annual: number[];
         cumulative: number[];
     };
+    scenario_summary: Record<string, ScenarioKPI>;
 }
 
 export default function ChartsPanel({ data }: { data: ChartData }) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 overflow-y-auto pr-4 pb-8">
+            {/* KPIs */}
+            <div className="mb-8">
+                <h2 className="text-xl font-semibold mb-2">📌 Key Performance Indicators</h2>
+                <div className="overflow-x-auto">
+                    <table className="min-w-full table-auto border border-gray-300 text-sm">
+                        <thead className="bg-gray-100">
+                        <tr>
+                            <th className="border px-3 py-2 text-left">Scenario</th>
+                            <th className="border px-3 py-2 text-right">Gross Receipts</th>
+                            <th className="border px-3 py-2 text-right">Total Return</th>
+                            <th className="border px-3 py-2 text-right">Investor ROI</th>
+                            <th className="border px-3 py-2 text-right">Investor IRR</th> {/* ✅ updated label */}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {Object.entries(data.scenario_summary).map(([key, kpi]) => (
+                            <tr key={key}>
+                                <td className="border px-3 py-2">{data.scenario_labels[key]}</td>
+                                <td className="border px-3 py-2 text-right">${kpi.gross_receipts.toLocaleString()}</td>
+                                <td className="border px-3 py-2 text-right">${kpi.total_return.toLocaleString()}</td>
+                                <td className="border px-3 py-2 text-right">{(kpi.roi * 100).toFixed(1)}%</td>
+                                <td className="border px-3 py-2 text-right">
+                                    {kpi.irr !== null ? `${(kpi.irr * 100).toFixed(1)}%` : 'N/A'}
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div className="mt-6">
+                <h3 className="text-lg font-semibold mb-1">📉 Breakeven Analysis</h3>
+                <p className="text-sm text-gray-700">
+                    The film requires estimated gross receipts of{" "}
+                    <span className="font-semibold text-black">
+        ${data.breakeven_receipts.toLocaleString()}
+      </span>{" "}
+                    to achieve a breakeven ROI (0%).
+                </p>
+            </div>
+
             {/* Chart 1: ROI & IRR */}
             <div>
                 <h2 className="text-xl font-semibold mb-2">📊 ROI & IRR by Scenario</h2>

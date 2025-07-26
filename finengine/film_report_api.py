@@ -107,6 +107,17 @@ def generate_chart_data(req: ReportRequest, auth=Depends(verify_api_key)):
         annual = cash_flow_df['Net Cash Flow to Equity'].round().astype(int).tolist()
         cumulative = cash_flow_df['Cumulative Cash Flow'].round().astype(int).tolist()
 
+        # Scenario summary KPIs
+        scenario_summary = {
+            scenario_key.lower().replace(" ", "_"): {
+                "gross_receipts": round(scenario_data.get("gross_receipts", 0)),
+                "total_return": round(scenario_data.get("total_return", 0)),
+                "roi": round(scenario_data.get("roi", 0), 4),
+                "irr": round(scenario_data.get("irr", 0), 4) if scenario_data.get("irr", -1.0) != -1.0 else None
+            }
+            for scenario_key, scenario_data in model.results.items()
+        }
+
         return {
             "scenarios": scenario_keys,
             "scenario_labels": dict(zip(scenario_keys, scenario_names)),
@@ -120,7 +131,8 @@ def generate_chart_data(req: ReportRequest, auth=Depends(verify_api_key)):
                 "annual": annual,
                 "cumulative": cumulative
             },
-            "investor_composition": investor_composition
+            "investor_composition": investor_composition,
+            "scenario_summary": scenario_summary
         }
 
     except Exception as e:
