@@ -4,6 +4,7 @@ import {
     BarChart, Bar, XAxis, YAxis, Tooltip, Legend,
     LineChart, Line, CartesianGrid
 } from 'recharts';
+import ChartsPanel from './components/ChartsPanel';
 
 interface ScenarioResult {
     scenario: string;
@@ -140,16 +141,19 @@ export default function App() {
     };
 
     return (
-        <div className="flex h-screen">
-            {/* Left panel – inputs */}
-            <div className="w-full md:w-1/2 overflow-y-auto p-6 border-r">
+        <div className="flex h-screen overflow-hidden">
+            {/* Left Panel - Inputs */}
+            <div
+                className="p-4 overflow-y-auto border-r border-gray-300 bg-white resize-x"
+                style={{ minWidth: '250px', maxWidth: '500px', width: '25%' }}
+            >
                 <h1 className="text-2xl font-bold mb-4">🎬 Film Finance Simulator</h1>
 
-                <div className="space-y-8 mb-6">
+                <div className="space-y-6">
                     {Object.entries(inputGroups).map(([groupLabel, keys]) => (
                         <div key={groupLabel}>
                             <h2 className="text-lg font-semibold mb-2">{groupLabel}</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4">
                                 {keys.map((key) => (
                                     <div key={key}>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -173,63 +177,16 @@ export default function App() {
                 <button
                     onClick={runModel}
                     disabled={loading}
-                    className="px-4 py-2 bg-blue-600 text-white rounded"
+                    className="mt-6 px-4 py-2 bg-blue-600 text-white rounded w-full"
                 >
-                    {loading ? "Running..." : "Run Model"}
+                    {loading ? 'Running...' : 'Run Model'}
                 </button>
             </div>
 
-            {/* Right panel – charts */}
-            <div className="w-full md:w-1/2 overflow-y-auto p-6">
-                {result && (
-                    <>
-                        <h2 className="text-xl font-semibold mb-4">📊 ROI & IRR by Scenario</h2>
-                        <BarChart width={500} height={300} data={result.scenarios.map((label, i) => ({
-                            name: label,
-                            ROI: result.roi_percent[i],
-                            IRR: result.irr_percent[i] ?? 0
-                        }))}>
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="ROI" fill="#8884d8" />
-                            <Bar dataKey="IRR" fill="#82ca9d" />
-                        </BarChart>
-
-                        <h2 className="text-xl font-semibold mt-8 mb-2">Composition of Investor Returns</h2>
-                        <BarChart width={500} height={300} data={
-                            Object.entries(result.investor_composition).map(([scenario, values]) => ({
-                                name: result.scenario_labels[scenario],
-                                Principal: values.principal,
-                                Profit: values.profit
-                            }))
-                        }>
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="Principal" stackId="a" fill="#3498db" />
-                            <Bar dataKey="Profit" stackId="a" fill="#2ecc71" />
-                        </BarChart>
-
-                        <h2 className="text-xl font-semibold mt-10 mb-4">💰 Cash Flow (Base Case)</h2>
-                        <LineChart width={500} height={300} data={result.cash_flows.years.map((y, i) => ({
-                            year: y,
-                            annual: result.cash_flows.annual[i],
-                            cumulative: result.cash_flows.cumulative[i]
-                        }))}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="year" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Line type="monotone" dataKey="annual" stroke="#8884d8" />
-                            <Line type="monotone" dataKey="cumulative" stroke="#82ca9d" />
-                        </LineChart>
-                    </>
-                )}
-            </div>
+            {/* Right Panel - Charts */}
+            {result && (
+                <ChartsPanel data={result} />
+            )}
         </div>
     );
 }
