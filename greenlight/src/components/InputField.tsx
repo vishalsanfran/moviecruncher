@@ -1,36 +1,34 @@
-import React from "react";
-
-interface InputFieldProps {
+interface Props {
     name: string;
     value: number;
     label: string;
     placeholder?: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    width?: string; // e.g. "w-32", "w-40"
 }
 
-const InputField: React.FC<InputFieldProps> = ({
-                                                   name,
-                                                   value,
-                                                   label,
-                                                   placeholder,
-                                                   onChange,
-                                               }) => {
+export default function InputField({
+                                       name,
+                                       value,
+                                       label,
+                                       placeholder,
+                                       onChange,
+                                       width = "w-32",
+                                   }: Props) {
     return (
-        <div>
-            <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="flex flex-col">
+            <label htmlFor={name} className="text-sm font-medium text-gray-700 mb-1">
                 {label}
             </label>
             <input
-                type="number"
                 id={name}
                 name={name}
+                type="number"
                 value={value}
                 onChange={onChange}
-                className="w-full border rounded px-3 py-2"
                 placeholder={placeholder}
+                className={`border rounded px-2 py-1 text-sm ${width}`}
             />
         </div>
     );
-};
-
-export default InputField;
+}

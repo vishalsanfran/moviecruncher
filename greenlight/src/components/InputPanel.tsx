@@ -46,14 +46,10 @@ export default function InputPanel({
                             className="w-full flex items-center justify-between bg-gray-100 px-4 py-2 font-semibold text-left"
                         >
                             {groupLabel}
-                            {openGroups[groupLabel] ? (
-                                <ChevronDown size={18} />
-                            ) : (
-                                <ChevronRight size={18} />
-                            )}
+                            {openGroups[groupLabel] ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                         </button>
                         {openGroups[groupLabel] && (
-                            <div className="grid grid-cols-1 gap-4 px-4 py-3">
+                            <div className="flex flex-wrap gap-4 px-4 py-3">
                                 {keys.map((key) => (
                                     <InputField
                                         key={key}
@@ -62,6 +58,7 @@ export default function InputPanel({
                                         label={inputMeta[key]?.label || key}
                                         placeholder={inputMeta[key]?.placeholder}
                                         onChange={handleChange}
+                                        width="w-32"
                                     />
                                 ))}
                             </div>
