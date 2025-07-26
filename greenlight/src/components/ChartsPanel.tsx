@@ -33,7 +33,7 @@ export default function ChartsPanel({ data }: { data: ChartData }) {
                     IRR: data.irr_percent[i] ?? 0
                 }))}>
                     <XAxis dataKey="name" />
-                    <YAxis />
+                    <YAxis tickFormatter={(val) => `${val}%`} />
                     <Tooltip />
                     <Legend />
                     <Bar dataKey="ROI" fill="#8884d8" />
@@ -52,7 +52,7 @@ export default function ChartsPanel({ data }: { data: ChartData }) {
                     }))
                 }>
                     <XAxis dataKey="name" />
-                    <YAxis />
+                    <YAxis tickFormatter={(val) => `${(val / 1_000_000).toFixed(1)}M$`} />
                     <Tooltip />
                     <Legend />
                     <Bar dataKey="Principal" stackId="a" fill="#3498db" />
@@ -70,7 +70,7 @@ export default function ChartsPanel({ data }: { data: ChartData }) {
                 }))}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="year" />
-                    <YAxis />
+                    <YAxis tickFormatter={(val) => `${(val / 1_000_000).toFixed(1)}M$`} />
                     <Tooltip />
                     <Legend />
                     <Line type="monotone" dataKey="annual" stroke="#8884d8" />

@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
-import {
-    BarChart, Bar, XAxis, YAxis, Tooltip, Legend,
-    LineChart, Line, CartesianGrid
-} from 'recharts';
 import ChartsPanel from './components/ChartsPanel';
+import InputField from './components/InputField';
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 interface ScenarioResult {
     scenario: string;
@@ -141,37 +139,44 @@ export default function App() {
     };
 
     return (
-        <div className="flex h-screen overflow-hidden">
+        <div className="flex flex-col md:flex-row h-screen overflow-hidden">
             {/* Left Panel - Inputs */}
             <div
-                className="p-4 overflow-y-auto border-r border-gray-300 bg-white resize-x"
-                style={{ minWidth: '250px', maxWidth: '500px', width: '25%' }}
+                className="md:w-1/3 lg:w-1/4 p-4 overflow-y-auto border-b md:border-b-0 md:border-r border-gray-300 bg-white resize-x"
+                style={{ minWidth: '250px', maxWidth: '500px' }}
             >
                 <h1 className="text-2xl font-bold mb-4">🎬 Film Finance Simulator</h1>
 
                 <div className="space-y-6">
-                    {Object.entries(inputGroups).map(([groupLabel, keys]) => (
-                        <div key={groupLabel}>
-                            <h2 className="text-lg font-semibold mb-2">{groupLabel}</h2>
-                            <div className="grid grid-cols-1 gap-4">
-                                {keys.map((key) => (
-                                    <div key={key}>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            {inputMeta[key]?.label || key}
-                                        </label>
-                                        <input
-                                            type="number"
-                                            name={key}
-                                            value={inputs[key]}
-                                            onChange={handleChange}
-                                            className="w-full border rounded px-3 py-2"
-                                            placeholder={inputMeta[key]?.placeholder}
-                                        />
+                    {Object.entries(inputGroups).map(([groupLabel, keys]) => {
+                        const [isOpen, setIsOpen] = useState(true);
+                        return (
+                            <div key={groupLabel} className="border rounded shadow-sm">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsOpen(!isOpen)}
+                                    className="w-full flex items-center justify-between bg-gray-100 px-4 py-2 font-semibold text-left"
+                                >
+                                    {groupLabel}
+                                    {isOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                                </button>
+                                {isOpen && (
+                                    <div className="grid grid-cols-1 gap-4 px-4 py-3">
+                                        {keys.map((key) => (
+                                            <InputField
+                                                key={key}
+                                                name={key}
+                                                value={inputs[key]}
+                                                label={inputMeta[key]?.label || key}
+                                                placeholder={inputMeta[key]?.placeholder}
+                                                onChange={handleChange}
+                                            />
+                                        ))}
                                     </div>
-                                ))}
+                                )}
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 <button
@@ -184,9 +189,9 @@ export default function App() {
             </div>
 
             {/* Right Panel - Charts */}
-            {result && (
-                <ChartsPanel data={result} />
-            )}
+            <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+                {result && <ChartsPanel data={result} />}
+            </div>
         </div>
     );
 }
