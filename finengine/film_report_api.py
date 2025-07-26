@@ -76,6 +76,23 @@ def generate_chart_data(req: ReportRequest, auth=Depends(verify_api_key)):
         roi_percent = [round(model.results[s]['roi'] * 100, 2) for s in scenario_names]
         irr_percent = [round(model.results[s]['irr'] * 100, 2) if model.results[s]['irr'] >= 0 else None for s in scenario_names]
 
+        for sname in scenario_names:
+            logger.debug(f"{sname} investor_returns: {model.results[sname]}")
+
+        equity_principal = model.inputs['financing']['Equity_Investment']
+        investor_composition = {}
+
+        for scenario_key, scenario_data in model.results.items():
+            total_return = scenario_data.get('total_return', 0)
+            principal = min(equity_principal, total_return)
+            profit = max(0, total_return - equity_principal)
+            investor_composition[scenario_key.lower().replace(" ", "_")] = {
+                "principal": round(principal),
+                "profit": round(profit)
+            }
+
+        logger.debug(f"investor composition {investor_composition}")
+
         roi_series = [
             {"scenario": k, "label": n, "roi": r}
             for k, n, r in zip(scenario_keys, scenario_names, roi_percent)
@@ -102,8 +119,10 @@ def generate_chart_data(req: ReportRequest, auth=Depends(verify_api_key)):
                 "years": years,
                 "annual": annual,
                 "cumulative": cumulative
-            }
+            },
+            "investor_composition": investor_composition
         }
 
     except Exception as e:
+        logger.exception("Failed to generate chart data")
         raise HTTPException(status_code=500, detail=f"Failed to generate chart data: {str(e)}")

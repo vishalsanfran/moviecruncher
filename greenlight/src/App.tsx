@@ -25,6 +25,12 @@ interface ChartData {
         annual: number[];
         cumulative: number[];
     };
+    investor_composition: {
+        [scenario: string]: {
+            principal: number;
+            profit: number;
+        };
+    };
 }
 
 interface Inputs {
@@ -159,6 +165,22 @@ export default function App() {
                         <Bar dataKey="IRR" fill="#82ca9d" />
                     </BarChart>
 
+                    <h2 className="text-xl font-semibold mt-8 mb-2">Composition of Investor Returns</h2>
+                    <BarChart width={600} height={300} data={
+                        Object.entries(result.investor_composition).map(([scenario, values]) => ({
+                            name: result.scenario_labels[scenario],
+                            Principal: values.principal,
+                            Profit: values.profit
+                        }))
+                    }>
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="Principal" stackId="a" fill="#3498db" />
+                        <Bar dataKey="Profit" stackId="a" fill="#2ecc71" />
+                    </BarChart>
+
                     <h2 className="text-xl font-semibold mt-10 mb-4">💰 Cash Flow (Base Case)</h2>
                     <LineChart width={600} height={300} data={result.cash_flows.years.map((y, i) => ({
                         year: y,
@@ -175,6 +197,8 @@ export default function App() {
                     </LineChart>
                 </div>
             )}
+
+
         </div>
     );
 }
