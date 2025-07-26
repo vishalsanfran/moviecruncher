@@ -122,22 +122,49 @@ export default function App() {
         }
     };
 
+    const inputMeta: Record<string, { label: string; placeholder?: string }> = {
+        equityInvestment: { label: "Equity Investment ($)" },
+        debtFinancing: { label: "Debt Financing ($)" },
+        gapFinancing: { label: "Gap Financing ($)" },
+        equityPremiumPercent: { label: "Equity Premium (%)" },
+        netProfitSplitPercent: { label: "Net Profit Split to Investors (%)" },
+        camFeePercent: { label: "CAM Fee (%)" },
+        distributionFeeDomesticPercent: { label: "Domestic Distribution Fee (%)" },
+        distributionFeeForeignPercent: { label: "Foreign Distribution Fee (%)" }
+    };
+
+    const inputGroups: Record<string, string[]> = {
+        "Financing": ["equityInvestment", "debtFinancing", "gapFinancing"],
+        "Investor Terms": ["equityPremiumPercent", "netProfitSplitPercent"],
+        "Fees": ["camFeePercent", "distributionFeeDomesticPercent", "distributionFeeForeignPercent"]
+    };
+
     return (
         <div className="p-6 max-w-5xl mx-auto">
             <h1 className="text-2xl font-bold mb-4">🎬 Film Finance Simulator</h1>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
-                {Object.entries(inputs).map(([key, value]) => (
-                    <label key={key} className="flex flex-col">
-                        {key.replace(/([A-Z])/g, " $1")}:
-                        <input
-                            type="number"
-                            name={key}
-                            value={value}
-                            onChange={handleChange}
-                            className="border p-2 rounded mt-1"
-                        />
-                    </label>
+            <div className="space-y-8 mb-6">
+                {Object.entries(inputGroups).map(([groupLabel, keys]) => (
+                    <div key={groupLabel}>
+                        <h2 className="text-lg font-semibold mb-2">{groupLabel}</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {keys.map((key) => (
+                                <div key={key}>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        {inputMeta[key]?.label || key}
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name={key}
+                                        value={inputs[key]}
+                                        onChange={handleChange}
+                                        className="w-full border rounded px-3 py-2"
+                                        placeholder={inputMeta[key]?.placeholder}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 ))}
             </div>
 
