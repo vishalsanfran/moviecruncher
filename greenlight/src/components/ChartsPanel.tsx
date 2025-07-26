@@ -27,6 +27,7 @@ interface ChartData {
         cumulative: number[];
     };
     scenario_summary: Record<string, ScenarioKPI>;
+    annual_waterfalls: Record<string, Record<string, Record<string, number>>>;
 }
 
 export default function ChartsPanel({ data }: { data: ChartData }) {
@@ -67,8 +68,8 @@ export default function ChartsPanel({ data }: { data: ChartData }) {
                 <p className="text-sm text-gray-700">
                     The film requires estimated gross receipts of{" "}
                     <span className="font-semibold text-black">
-        ${data.breakeven_receipts.toLocaleString()}
-      </span>{" "}
+                        ${data.breakeven_receipts.toLocaleString()}
+                      </span>{" "}
                     to achieve a breakeven ROI (0%).
                 </p>
             </div>
@@ -126,6 +127,45 @@ export default function ChartsPanel({ data }: { data: ChartData }) {
                     <Line type="monotone" dataKey="cumulative" stroke="#82ca9d" />
                 </LineChart>
             </div>
+
+            {data.annual_waterfalls && (
+                <div className="mt-10">
+                    <h2 className="text-xl font-semibold mb-4">🧾 Detailed Annual Waterfall (Year-by-Year)</h2>
+                    {Object.entries(data.annual_waterfalls).map(([scenarioKey, yearData]) => (
+                        <div key={scenarioKey} className="mb-8 overflow-auto">
+                            <h3 className="text-lg font-semibold mb-2">
+                                {data.scenario_labels[scenarioKey] || scenarioKey}
+                            </h3>
+                            <table className="min-w-max table-auto border border-gray-300">
+                                <thead>
+                                <tr className="bg-gray-100">
+                                    <th className="border px-4 py-2 text-left">Line Item</th>
+                                    {Object.keys(yearData).map((year) => (
+                                        <th key={year} className="border px-4 py-2 text-left">{year}</th>
+                                    ))}
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {Array.from(
+                                    new Set(
+                                        Object.values(yearData).flatMap((yearObj) => Object.keys(yearObj))
+                                    )
+                                ).map((lineItem) => (
+                                    <tr key={lineItem}>
+                                        <td className="border px-4 py-2">{lineItem}</td>
+                                        {Object.keys(yearData).map((year) => (
+                                            <td key={year + lineItem} className="border px-4 py-2">
+                                                {yearData[year][lineItem]?.toLocaleString() ?? "-"}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

@@ -93,6 +93,17 @@ def generate_chart_data(req: ReportRequest, auth=Depends(verify_api_key)):
 
         logger.debug(f"investor composition {investor_composition}")
 
+        # After investor_composition, before return
+        annual_waterfalls = {}
+        for scenario_key, scenario_data in model.results.items():
+            waterfall_df = scenario_data.get("annual_waterfall_df")
+            if waterfall_df is not None:
+                transposed_df = waterfall_df.transpose()
+                transposed_df.index.name = "Line Item"
+                annual_waterfalls[scenario_key.lower().replace(" ", "_")] = (
+                    transposed_df.round(0).fillna(0).to_dict(orient="index")
+                )
+
         roi_series = [
             {"scenario": k, "label": n, "roi": r}
             for k, n, r in zip(scenario_keys, scenario_names, roi_percent)
@@ -132,7 +143,8 @@ def generate_chart_data(req: ReportRequest, auth=Depends(verify_api_key)):
                 "cumulative": cumulative
             },
             "investor_composition": investor_composition,
-            "scenario_summary": scenario_summary
+            "scenario_summary": scenario_summary,
+            "annual_waterfalls": annual_waterfalls,
         }
 
     except Exception as e:
