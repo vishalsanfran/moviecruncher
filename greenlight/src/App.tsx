@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import ChartsPanel from './components/ChartsPanel';
-import InputField from './components/InputField';
-import { ChevronDown, ChevronRight } from "lucide-react";
+import InputPanel from './components/InputPanel';
 
 interface ScenarioResult {
     scenario: string;
@@ -139,59 +138,16 @@ export default function App() {
     };
 
     return (
-        <div className="flex flex-col md:flex-row h-screen overflow-hidden">
-            {/* Left Panel - Inputs */}
-            <div
-                className="md:w-1/3 lg:w-1/4 p-4 overflow-y-auto border-b md:border-b-0 md:border-r border-gray-300 bg-white resize-x"
-                style={{ minWidth: '250px', maxWidth: '500px' }}
-            >
-                <h1 className="text-2xl font-bold mb-4">🎬 Film Finance Simulator</h1>
-
-                <div className="space-y-6">
-                    {Object.entries(inputGroups).map(([groupLabel, keys]) => {
-                        const [isOpen, setIsOpen] = useState(true);
-                        return (
-                            <div key={groupLabel} className="border rounded shadow-sm">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsOpen(!isOpen)}
-                                    className="w-full flex items-center justify-between bg-gray-100 px-4 py-2 font-semibold text-left"
-                                >
-                                    {groupLabel}
-                                    {isOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-                                </button>
-                                {isOpen && (
-                                    <div className="grid grid-cols-1 gap-4 px-4 py-3">
-                                        {keys.map((key) => (
-                                            <InputField
-                                                key={key}
-                                                name={key}
-                                                value={inputs[key]}
-                                                label={inputMeta[key]?.label || key}
-                                                placeholder={inputMeta[key]?.placeholder}
-                                                onChange={handleChange}
-                                            />
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-
-                <button
-                    onClick={runModel}
-                    disabled={loading}
-                    className="mt-6 px-4 py-2 bg-blue-600 text-white rounded w-full"
-                >
-                    {loading ? 'Running...' : 'Run Model'}
-                </button>
-            </div>
-
-            {/* Right Panel - Charts */}
-            <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
-                {result && <ChartsPanel data={result} />}
-            </div>
+        <div className="flex h-screen overflow-hidden">
+            <InputPanel
+                inputs={inputs}
+                inputGroups={inputGroups}
+                inputMeta={inputMeta}
+                handleChange={handleChange}
+                runModel={runModel}
+                loading={loading}
+            />
+            {result && <ChartsPanel data={result} />}
         </div>
     );
 }
