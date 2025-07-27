@@ -7,7 +7,6 @@ interface UseFinanceModelResult {
     setInputs: React.Dispatch<React.SetStateAction<Inputs>>;
     result: any;
     loading: boolean;
-    error: string | null;
     runModel: () => Promise<void>;
 }
 
@@ -54,23 +53,14 @@ export const useFinanceModel = (): UseFinanceModelResult => {
     });
     const [result, setResult] = useState<any>(null);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
-    const runModel = async (inputs: Record<string, number>) => {
+    const runModel = async () => {
         setLoading(true);
-        setError(null);
 
         try {
             const payload = {
                 title: "Demo Project",
-                budget: {
-                    total_gross_budget: inputs.totalGrossBudget,
-                },
-                financing: {
-                    Equity_Investment: inputs.equityInvestment,
-                    Debt_Financing: inputs.debtFinancing,
-                    Gap_Financing: inputs.gapFinancing,
-                },
+                budget: { total_gross_budget: inputs.totalGrossBudget },
                 base_case_revenue: {
                     Domestic: inputs.baseCaseDomesticRevenue,
                     Foreign: inputs.baseCaseForeignRevenue,
@@ -78,6 +68,11 @@ export const useFinanceModel = (): UseFinanceModelResult => {
                 scenario_multipliers: {
                     Best_Case: inputs.bestCaseMultiplier,
                     Worst_Case: inputs.worstCaseMultiplier,
+                },
+                financing: {
+                    Equity_Investment: inputs.equityInvestment,
+                    Debt_Financing: inputs.debtFinancing,
+                    Gap_Financing: inputs.gapFinancing,
                 },
                 waterfall_terms: {
                     Equity_Premium_Percent: inputs.equityPremiumPercent / 100,
@@ -95,29 +90,22 @@ export const useFinanceModel = (): UseFinanceModelResult => {
                 },
                 timeline: {
                     projection_years: inputs.projectionYears,
-                    revenue_recognition_schedule: [0.6, 0.3, 0.1], // keep hardcoded or make input if desired
+                    revenue_recognition_schedule: [0.6, 0.3, 0.1],
                     tax_credit_inflow_year: inputs.taxCreditInflowYear,
-                },
-            };
-            // console.log("Payload being sent to backend:", payload);
-            const response = await axios.post(
-                `${import.meta.env.VITE_API_BASE_URL}/models`,
-                payload,
-                {
-                    headers: {
-                        "x-api-key": import.meta.env.VITE_API_KEY,
-                    },
                 }
-            );
+            };
+
+            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/models`, payload, {
+                headers: { "x-api-key": import.meta.env.VITE_API_KEY },
+            });
 
             setResult(response.data);
-        } catch (err: any) {
-            console.error("Model run failed:", err);
-            setError("Failed to run model");
+        } catch (err) {
+            console.error("Error in runModel:", err);
         } finally {
             setLoading(false);
         }
     };
 
-    return { inputs, setInputs, result, loading, error, runModel };
+    return { inputs, setInputs, result, loading, runModel };
 };

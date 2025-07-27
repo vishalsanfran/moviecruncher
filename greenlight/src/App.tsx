@@ -8,10 +8,10 @@ export default function App() {
         const { name, value } = e.target;
         setInputs((prev) => ({ ...prev, [name]: Number(value) }));
     };
-    const { inputs, setInputs, result, loading, _, runModel } = useFinanceModel();
+    const { inputs, setInputs, result, loading, runModel } = useFinanceModel();
     const handleRunModel = () => {
         console.log("Inputs going to runModel:", inputs);
-        runModel(inputs);
+        runModel();
     };
 
     return (

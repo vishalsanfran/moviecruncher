@@ -33,5 +33,8 @@ export interface Inputs {
     projectionYears: number;
     taxCreditInflowYear: number;
 
+    saCommissionDomesticPercent: number;
+    saCommissionForeignPercent: number;
+    saCommissionForeignDeferralPercent: number;
     gapFinancingPremiumPercent: number;
 }

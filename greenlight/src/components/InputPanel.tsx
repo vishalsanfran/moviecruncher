@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import InputField from './InputField';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import type { Inputs } from '../types';
 
 interface Props {
-    inputs: Record<string, number>;
-    inputGroups: Record<string, string[]>;
+    inputs: Inputs;
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     runModel: () => void;
     loading: boolean;
@@ -117,7 +117,7 @@ export default function InputPanel({
                                     <InputField
                                         key={key}
                                         name={key}
-                                        value={inputs[key]}
+                                        value={inputs[key as keyof Inputs]}
                                         label={inputMeta[key]?.label || key}
                                         placeholder={inputMeta[key]?.placeholder}
                                         onChange={handleChange}
