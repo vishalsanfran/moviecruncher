@@ -43,7 +43,7 @@ export default function ChartsPanel({ data }: { data: ChartData }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 overflow-y-auto pr-4 pb-8">
             {/* KPIs */}
             <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-2">📌 Key Performance Indicators</h2>
+                <h2 className="text-xl font-semibold mb-2">📌 Key Performance Indicators (KPIs)</h2>
                 <div className="overflow-x-auto">
                     <table className="min-w-full table-auto border border-gray-300 text-sm">
                         <thead className="bg-gray-100">
@@ -101,7 +101,7 @@ export default function ChartsPanel({ data }: { data: ChartData }) {
 
             {/* Chart 2: Composition of Investor Returns */}
             <div>
-                <h2 className="text-xl font-semibold mb-2">💼 Composition of Investor Returns</h2>
+                <h2 className="text-xl font-semibold mb-2">💼 Composition of Investor Returns by Scenario</h2>
                 <BarChart width={500} height={300} data={
                     Object.entries(data.investor_composition).map(([scenario, values]) => ({
                         name: data.scenario_labels[scenario],
@@ -110,7 +110,13 @@ export default function ChartsPanel({ data }: { data: ChartData }) {
                     }))
                 }>
                     <XAxis dataKey="name" />
-                    <YAxis tickFormatter={(val) => `${(val / 1_000_000).toFixed(1)}M$`} />
+                    <YAxis tickFormatter={(val) => `${(val / 1_000_000).toFixed(1)}M$`} label={{
+                        value: 'Amount (USD)',
+                        angle: -90,
+                        position: 'insideLeft',
+                        offset: 10,
+                        style: { textAnchor: 'middle' },
+                    }} />
                     <Tooltip />
                     <Legend />
                     <Bar dataKey="Principal" stackId="a" fill="#3498db" />
@@ -120,7 +126,7 @@ export default function ChartsPanel({ data }: { data: ChartData }) {
 
             {/* Chart 3: Cash Flow */}
             <div className="md:col-span-2">
-                <h2 className="text-xl font-semibold mb-2">💰 Cash Flow (Base Case)</h2>
+                <h2 className="text-xl font-semibold mb-2">💰Base Case Cash Flow to Equity</h2>
                 <LineChart width={1000} height={300} data={data.cash_flows.years.map((y, i) => ({
                     year: y,
                     annual: data.cash_flows.annual[i],
@@ -128,7 +134,13 @@ export default function ChartsPanel({ data }: { data: ChartData }) {
                 }))}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="year" />
-                    <YAxis tickFormatter={(val) => `${(val / 1_000_000).toFixed(1)}M$`} />
+                    <YAxis tickFormatter={(val) => `${(val / 1_000_000).toFixed(1)}M$`} label={{
+                        value: 'Amount (USD)',
+                        angle: -90,
+                        position: 'insideLeft',
+                        offset: 10,
+                        style: { textAnchor: 'middle' },
+                    }} />
                     <Tooltip />
                     <Legend />
                     <Line type="monotone" dataKey="annual" stroke="#8884d8" />

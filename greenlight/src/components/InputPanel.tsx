@@ -11,6 +11,18 @@ interface Props {
 }
 
 const inputMeta: Record<string, { label: string; placeholder?: string }> = {
+    // Budget
+    totalGrossBudget: { label: "Total Gross Budget" },
+
+    // Base Case Revenue
+    baseCaseDomesticRevenue: { label: "Domestic" },
+    baseCaseForeignRevenue: { label: "Foreign" },
+
+    // Scenario Multipliers
+    bestCaseMultiplier: { label: "Best Case (x)" },
+    worstCaseMultiplier: { label: "Worst Case (x)" },
+
+    // Waterfall Terms (existing + new)
     equityInvestment: { label: "Equity Investment ($)" },
     debtFinancing: { label: "Debt Financing ($)" },
     gapFinancing: { label: "Gap Financing ($)" },
@@ -18,13 +30,52 @@ const inputMeta: Record<string, { label: string; placeholder?: string }> = {
     netProfitSplitPercent: { label: "Net Profit Investor Split (%)" },
     camFeePercent: { label: "CAM Fee (%)" },
     distributionFeeDomesticPercent: { label: "Domestic Distrib Fee (%)" },
-    distributionFeeForeignPercent: { label: "Foreign Distrib Fee (%)" }
+    distributionFeeForeignPercent: { label: "Foreign Distrib Fee (%)" },
+    camSetupFee: { label: "CAM Setup Fee ($)" },
+    talentDeferrals: { label: "Talent Deferrals ($)" },
+    otherDeferrals: { label: "Other Deferrals ($)" },
+
+    // Timeline
+    projectionYears: { label: "Projection Years" },
+    taxCreditInflowYear: { label: "Tax Credit Inflow Year" },
+    gapFinancingPremiumPercent: { label: "Gap Financing Premium (%)" },
 };
 
 const inputGroups: Record<string, string[]> = {
-    "Financing": ["equityInvestment", "debtFinancing", "gapFinancing"],
-    "Investor Terms": ["equityPremiumPercent", "netProfitSplitPercent"],
-    "Fees": ["camFeePercent", "distributionFeeDomesticPercent", "distributionFeeForeignPercent"]
+    "Base Case Revenue ($)": ["totalGrossBudget", "baseCaseDomesticRevenue", "baseCaseForeignRevenue"],
+
+    "Scenario Multipliers": ["bestCaseMultiplier", "worstCaseMultiplier"],
+
+    "Financing Structure": [
+        "equityInvestment",
+        "debtFinancing",
+        "gapFinancing"
+    ],
+
+    "Investor Terms": [
+        "equityPremiumPercent",
+        "netProfitSplitPercent"
+    ],
+
+    "Distribution & CAM Fees": [
+        "camFeePercent",
+        "distributionFeeDomesticPercent",
+        "distributionFeeForeignPercent",
+        "camSetupFee"
+    ],
+
+    "Deferrals": [
+        "talentDeferrals",
+        "otherDeferrals"
+    ],
+
+    "Timeline": [
+        "projectionYears",
+        "taxCreditInflowYear"
+    ],
+    "Fees": [
+        "gapFinancingPremiumPercent",
+    ],
 };
 
 export default function InputPanel({
@@ -33,9 +84,10 @@ export default function InputPanel({
                                        runModel,
                                        loading,
                                    }: Props) {
-    const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(
-        Object.fromEntries(Object.keys(inputGroups).map((g) => [g, true]))
-    );
+    const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
+        const entries = Object.entries(inputGroups);
+        return Object.fromEntries(entries.map(([groupLabel], idx) => [groupLabel, idx === 0]));
+    });
 
     const toggleGroup = (groupLabel: string) => {
         setOpenGroups((prev) => ({ ...prev, [groupLabel]: !prev[groupLabel] }));
