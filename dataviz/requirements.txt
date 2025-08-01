@@ -1,0 +1,4 @@
+# Core Libraries
+pandas
+lightgbm
+scikit-learn
