@@ -1,4 +1,8 @@
 # Core Libraries
 pandas
-lightgbm
-scikit-learn
+lightgbm==4.6.0
+scikit-learn==1.7.1
+notebook
+matplotlib
+sentence-transformers==5.0.0
+ipywidgets
