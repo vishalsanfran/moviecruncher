@@ -9,3 +9,7 @@ dotenv
 # FastAPI and Server
 fastapi
 uvicorn[standard]
+
+#semantic search
+sentence-transformers==5.0.0
+faiss-cpu==1.11.0

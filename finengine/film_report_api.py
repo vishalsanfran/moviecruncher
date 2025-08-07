@@ -12,6 +12,7 @@ from fastapi.requests import Request
 import os
 from typing import Optional
 from dotenv import load_dotenv
+from semantic_search_api import router as similarity_router
 load_dotenv()
 
 
@@ -37,6 +38,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(similarity_router)
 
 class ReportRequest(BaseModel):
     title: str
