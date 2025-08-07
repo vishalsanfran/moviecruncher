@@ -1,7 +1,6 @@
 import { useState } from "react";
 import ChartsPanel from './components/ChartsPanel';
 import InputPanel from './components/InputPanel';
-import { ChatPanel } from "./components/ChatPanel";
 import { useFinanceModel } from "./hooks/useFinanceModel";
 import axios from "axios";
 
@@ -67,7 +66,7 @@ export default function App() {
                     <textarea
                         value={queryInput}
                         onChange={(e) => setQueryInput(e.target.value)}
-                        placeholder="Search movie title, cast, etc."
+                        placeholder="Provide a description for the movie (Feel free to add title, cast, director)"
                         className="w-full p-2 mb-2 border rounded resize-none overflow-hidden"
                         rows={1}
                         onInput={(e) => {
@@ -87,6 +86,16 @@ export default function App() {
                     {/* 👇 Show results */}
                     {searchResponse && (
                         <div className="mt-4">
+                            {searchResponse.revenue_millions && (
+                                <div className="mb-4 text-sm text-gray-800 bg-gray-100 p-3 rounded shadow">
+                                    <div className="font-semibold mb-1">Estimated Revenue (in millions):</div>
+                                    <div>Min: ${searchResponse.revenue_millions.min.toFixed(2)}M</div>
+                                    <div>Max: ${searchResponse.revenue_millions.max.toFixed(2)}M</div>
+                                    <div>Median: ${searchResponse.revenue_millions.median.toFixed(2)}M</div>
+                                    <div>Mean: ${searchResponse.revenue_millions.mean.toFixed(2)}M</div>
+                                </div>
+                            )}
+
                             <h3 className="font-semibold mb-2">Top Matches</h3>
                             <ul className="space-y-2">
                                 {searchResponse.top_results?.slice(0, 5).map((movie: any, idx: number) => (
