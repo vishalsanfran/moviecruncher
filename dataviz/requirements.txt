@@ -6,3 +6,4 @@ notebook
 matplotlib
 sentence-transformers==5.0.0
 ipywidgets
+faiss-cpu==1.11.0
