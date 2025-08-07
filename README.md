@@ -18,6 +18,9 @@ A fullstack tool to model, analyze, and visualize financial returns for film pro
 cd finengine
 ./create_venv.sh
 source ./venv-activate.sh
+cat <<EOF > .env
+API_KEY=dev-local-api-key
+EOF
 ./start-server.sh
 ```
 
@@ -29,6 +32,10 @@ Visit: http://localhost:8000/docs for the auto-generated API docs.
 ```aiignore
 cd greenlight
 npm install
+cat <<EOF > .env.local
+VITE_API_BASE_URL=http://localhost:8000
+VITE_API_KEY=dev-local-api-key
+EOF
 ```
 
 🧪 Run Locally
