@@ -1,0 +1,13 @@
+transformers==4.45.0
+sentence-transformers==2.7.0
+langchain==0.2.14
+faiss-cpu
+datasets
+evaluate
+tqdm
+matplotlib
+seaborn
+pandas
+numpy
+vllm==0.5.1
+accelerate
