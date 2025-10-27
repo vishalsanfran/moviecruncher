@@ -1,0 +1,7 @@
+opencv-python
+jupyter
+torch
+matplotlib
+ultralytics
+tqdm
+facenet_pytorch
