@@ -3,3 +3,6 @@
 *.json
 *.pkl
 *.idx
+*.jpg
+*.pt
+*..parquet
