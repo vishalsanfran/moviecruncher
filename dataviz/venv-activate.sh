@@ -13,5 +13,5 @@ if [ -d "$VENV_PATH" ]; then
   echo "✅ Virtual environment activated from: $VENV_PATH"
 else
   echo "❌ .venv directory not found at '$VENV_PATH'. Run create_venv.sh first." >&2
-  exit 1
+  # exit 1
 fi
