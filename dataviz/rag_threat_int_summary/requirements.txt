@@ -9,5 +9,5 @@ matplotlib
 seaborn
 pandas
 numpy
-vllm==0.5.1
+vllm
 accelerate
